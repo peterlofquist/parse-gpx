@@ -3,6 +3,7 @@
 const xml2js = require('xml2js');
 const fs = require('fs');
 const parseTrack = require('./src/parseTrack');
+const parseWay = require('./src/parseWay');
 
 module.exports = (filename) => {
 
@@ -18,7 +19,13 @@ module.exports = (filename) => {
                 if(err) {
                     rej(err);
                 } else {
-                    res(parseTrack(xml.gpx.trk));
+                    if (!!xml.gpx.trk) {
+                        res(parseTrack(xml.gpx.trk));
+                    } else if (!!xml.gpx.rte) {
+                        res(parseWay(xml.gpx.rte));
+                    } else {
+                        rej(Error('Unsupported gpxType.'));
+                    }
                 }
             });
         });
